@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  tfs-mnist:
+    image: tensorflow/serving
+    ports: 
+      - 8501:8501
+    working_dir: /models/mnist
+    environment: 
+      MODEL_NAME: mnist
+    volumes:
+      - /d/tmp/mnist:/models/mnist
+  tfs-imdb:
+    image: tensorflow/serving
+    ports: 
+      - 8502:8501
+    working_dir: /models/imdb
+    environment: 
+      MODEL_NAME: imdb
+    volumes:
+      - /d/tmp/imdb:/models/imdb
+  tfs-flask:
+    image: boangri/tfs-flask
+    ports:
+      - 5000:5000
+    working_dir: /usr/src/app
+    environment:
+      PORT: 5000
+    volumes:
+      - /c/Users/boris_2/notebooks/UAI-PRO/hw22/tfs-app:/usr/src/app
+  

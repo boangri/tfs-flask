@@ -1,0 +1,5 @@
+Flask==1.0
+requests==2.23
+opencv-python
+regex
+numpy==1.19
