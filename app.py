@@ -33,7 +33,16 @@ def mnist():
   sample = 1. - sample
   sample = np.reshape(sample, (1, 28, 28, 1))  
   data = {"signature_name": "serving_default", "instances": sample.tolist()}
-  return "OK"
+  json_string = json.dumps(data)
+  headers = {"content-type": "application/json"}
+  json_response = requests.post('http://tfs-mnist:8501/v1/models/mnist:predict', data=json_string, headers=headers)
+  try:
+    predictions = json.loads(json_response.text)['predictions']
+    digit = np.argmax(predictions, axis=1)
+    output = f'Digit {digit}'
+  except KeyError:
+    output = json_response.text
+  return output
 
 
 if __name__ == "__main__":
