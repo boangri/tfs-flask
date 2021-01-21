@@ -8,6 +8,8 @@ import numpy as np
 import base64
 
 app = Flask(__name__)
+with open("imdb_word_index.json", "r") as file:
+  dict = json.load(file)
 
 def convertImage(imgData):
     imgstr = re.search(b'base64,(.*)',imgData).group(1) # находим строчку, в которой содержится побитовое представление изображение,
@@ -38,8 +40,37 @@ def mnist():
   json_response = requests.post('http://tfs-mnist:8501/v1/models/mnist:predict', data=json_string, headers=headers)
   try:
     predictions = json.loads(json_response.text)['predictions']
-    digit = np.argmax(predictions, axis=1)
-    output = f'Digit {digit}'
+    digit = np.argmax(predictions, axis=1)[0]
+    output = f'{digit}'
+  except KeyError:
+    output = json_response.text
+  return output
+
+@app.route("/imdb", methods=['POST'])
+def imdb():
+  text = request.get_data()
+  words = text.split()
+  N = len(words)
+  sample = np.zeros((1, 200), dtype=np.int32)
+  for i, word in enumerate(words):
+    if word in dict.keys():
+      n = dict[word]
+      j = 200 - N + i
+      if j < 0: 
+        break
+      sample[0, j] = n
+      print("found: %s -> %d" % (word, n))
+    else:
+      sample[0, j] = 1 # oov
+  data = {"signature_name": "serving_default", "instances": sample.tolist()}
+  json_string = json.dumps(data)
+  headers = {"content-type": "application/json"}
+  json_response = requests.post('http://tfs-imdb:8501/v1/models/imdb:predict', data=json_string, headers=headers)
+  try:
+    predictions = json.loads(json_response.text)['predictions']
+    digit = np.argmax(predictions, axis=1)[0]
+    result = 'positive' if digit == 1 else 'negative'
+    output = f'{result}'
   except KeyError:
     output = json_response.text
   return output
@@ -47,5 +78,4 @@ def mnist():
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
 
