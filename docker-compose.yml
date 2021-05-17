@@ -11,6 +11,7 @@ services:
     volumes:
       - /home/boris/models/mnist:/models/mnist
   tfs-flask:
+    restart: always
     image: boangri/tfs-flask
     ports:
       - 5000:5000
