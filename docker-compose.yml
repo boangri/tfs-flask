@@ -9,16 +9,7 @@ services:
     environment: 
       MODEL_NAME: mnist
     volumes:
-      - /d/tmp/mnist:/models/mnist
-  tfs-imdb:
-    image: tensorflow/serving
-    ports: 
-      - 8502:8501
-    working_dir: /models/imdb
-    environment: 
-      MODEL_NAME: imdb
-    volumes:
-      - /d/tmp/imdb:/models/imdb
+      - /home/boris/mnist:/models/mnist
   tfs-flask:
     image: boangri/tfs-flask
     ports:
