@@ -9,7 +9,7 @@ services:
     environment: 
       MODEL_NAME: mnist
     volumes:
-      - /home/boris/mnist:/models/mnist
+      - /home/boris/models/mnist:/models/mnist
   tfs-flask:
     image: boangri/tfs-flask
     ports:
